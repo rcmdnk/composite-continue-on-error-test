@@ -1,0 +1,26 @@
+name: test
+
+on:
+  workflow_dispatch:
+    inputs:
+      continue:
+        type: boolean
+        required: false
+        default: false
+        
+jobs:      
+  test:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: check continue-on-error test 1
+        continue-on-error: true
+        run: exit 1
+      - name: check continue-on-error with variable
+        continue-on-error: ${{ github.event_name == 'workflow_dispatch' && inputs.continue }}
+        run: exit 1
+      - uses: rcmdnk/fail-action@main
+        continue-on-error: true
+      - uses: rcmdnk/fail-action@main
+        continue-on-error: ${{ github.event_name == 'workflow_dispatch' && inputs.continue }}
+      - name: last check
+        run: ok
